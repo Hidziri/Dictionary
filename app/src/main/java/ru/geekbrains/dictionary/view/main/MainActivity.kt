@@ -6,9 +6,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.Toast
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import dagger.android.AndroidInjection
 import ru.geekbrains.dictionary.R
 import ru.geekbrains.dictionary.model.data.AppState
 import ru.geekbrains.dictionary.model.data.DataModel
@@ -16,12 +14,9 @@ import ru.geekbrains.dictionary.utils.network.isOnline
 import ru.geekbrains.dictionary.view.base.BaseActivity
 import ru.geekbrains.dictionary.view.main.adapter.MainAdapter
 import kotlinx.android.synthetic.main.activity_main.*
-import javax.inject.Inject
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class MainActivity : BaseActivity<AppState, MainInteractor>() {
-
-    @Inject
-    internal lateinit var viewModelFactory: ViewModelProvider.Factory
 
     override lateinit var model: MainViewModel
     private val adapter: MainAdapter by lazy { MainAdapter(onListItemClickListener) }
@@ -50,17 +45,10 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        AndroidInjection.inject(this)
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        model = viewModelFactory.create(MainViewModel::class.java)
-        model.subscribe().observe(this@MainActivity, Observer<AppState> { renderData(it) })
-
-        search_fab.setOnClickListener(fabClickListener)
-        main_activity_recyclerview.layoutManager = LinearLayoutManager(applicationContext)
-        main_activity_recyclerview.adapter = adapter
+        iniViewModel()
+        initViews()
     }
 
     override fun renderData(appState: AppState) {
@@ -95,6 +83,21 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
         }
     }
 
+    private fun iniViewModel() {
+        if (main_activity_recyclerview.adapter != null) {
+            throw IllegalStateException("The ViewModel should be initialised first")
+        }
+        val viewModel: MainViewModel by viewModel()
+        model = viewModel
+        model.subscribe().observe(this@MainActivity, Observer<AppState> { renderData(it) })
+    }
+
+    private fun initViews() {
+        search_fab.setOnClickListener(fabClickListener)
+        main_activity_recyclerview.layoutManager = LinearLayoutManager(applicationContext)
+        main_activity_recyclerview.adapter = adapter
+    }
+
     private fun showViewWorking() {
         loading_frame_layout.visibility = GONE
     }
@@ -104,6 +107,7 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
     }
 
     companion object {
-        private const val BOTTOM_SHEET_FRAGMENT_DIALOG_TAG = "74a54328-5d62-46bf-ab6b-cbf5fgt0-092395"
+        private const val BOTTOM_SHEET_FRAGMENT_DIALOG_TAG =
+            "74a54328-5d62-46bf-ab6b-cbf5fgt0-092395"
     }
 }
