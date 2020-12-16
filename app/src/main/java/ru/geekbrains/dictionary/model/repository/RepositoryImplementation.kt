@@ -1,14 +1,13 @@
 package ru.geekbrains.dictionary.model.repository
 
-import ru.geekbrains.dictionary.model.data.SearchResult
 import ru.geekbrains.dictionary.model.datasource.DataSource
 import io.reactivex.Observable
-import ru.geekbrains.dictionary.model.repository.Repository
+import ru.geekbrains.dictionary.model.data.DataModel
 
-class RepositoryImplementation(private val dataSource: DataSource<List<SearchResult>>) :
-    Repository<List<SearchResult>> {
+class RepositoryImplementation(private val dataSource: DataSource<List<DataModel>>) :
+    Repository<List<DataModel>> {
 
-    override fun getData(word: String): Observable<List<SearchResult>> {
+    override fun getData(word: String): Observable<List<DataModel>> {
         return dataSource.getData(word)
     }
 }

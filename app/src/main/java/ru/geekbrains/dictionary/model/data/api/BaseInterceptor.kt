@@ -1,8 +1,9 @@
-package ru.geekbrains.dictionary.model.datasource
+package ru.geekbrains.dictionary.model.data.api
 
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.io.IOException
+import kotlin.jvm.Throws
 
 /**
  * Custom interceptor to intercept basic responses and to show basic errors to the user
@@ -20,13 +21,17 @@ class BaseInterceptor private constructor() : Interceptor {
     }
 
     fun getResponseCode(): ServerResponseStatusCode {
-        var statusCode = ServerResponseStatusCode.UNDEFINED_ERROR
+        var statusCode =
+            ServerResponseStatusCode.UNDEFINED_ERROR
         when (responseCode / 100) {
             1 -> statusCode = ServerResponseStatusCode.INFO
             2 -> statusCode = ServerResponseStatusCode.SUCCESS
-            3 -> statusCode = ServerResponseStatusCode.REDIRECTION
-            4 -> statusCode = ServerResponseStatusCode.CLIENT_ERROR
-            5 -> statusCode = ServerResponseStatusCode.SERVER_ERROR
+            3 -> statusCode =
+                ServerResponseStatusCode.REDIRECTION
+            4 -> statusCode =
+                ServerResponseStatusCode.CLIENT_ERROR
+            5 -> statusCode =
+                ServerResponseStatusCode.SERVER_ERROR
         }
         return statusCode
     }
