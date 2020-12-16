@@ -3,8 +3,6 @@ package ru.geekbrains.dictionary.utils.ui
 import android.app.Dialog
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatDialogFragment
-import ru.geekbrains.dictionary.utils.ui.getAlertDialog
-import ru.geekbrains.dictionary.utils.ui.getStubAlertDialog
 
 class AlertDialogFragment : AppCompatDialogFragment() {
 
