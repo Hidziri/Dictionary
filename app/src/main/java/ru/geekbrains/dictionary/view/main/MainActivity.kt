@@ -1,6 +1,8 @@
 package ru.geekbrains.dictionary.view.main
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -15,6 +17,9 @@ import ru.geekbrains.dictionary.view.base.BaseActivity
 import ru.geekbrains.dictionary.view.main.adapter.MainAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.android.viewmodel.ext.android.viewModel
+import ru.geekbrains.dictionary.utils.convertMeaningsToString
+import ru.geekbrains.dictionary.view.descriptionscreen.DescriptionActivity
+import ru.geekbrains.dictionary.view.history.HistoryActivity
 
 class MainActivity : BaseActivity<AppState, MainInteractor>() {
 
@@ -29,7 +34,14 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
     private val onListItemClickListener: MainAdapter.OnListItemClickListener =
         object : MainAdapter.OnListItemClickListener {
             override fun onItemClick(data: DataModel) {
-                Toast.makeText(this@MainActivity, data.text, Toast.LENGTH_SHORT).show()
+                startActivity(
+                    DescriptionActivity.getIntent(
+                        this@MainActivity,
+                        data.text!!,
+                        convertMeaningsToString(data.meanings!!),
+                        data.meanings[0].imageUrl
+                    )
+                )
             }
         }
     private val onSearchClickListener: SearchDialogFragment.OnSearchClickListener =
@@ -51,36 +63,40 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
         initViews()
     }
 
-    override fun renderData(appState: AppState) {
-        when (appState) {
-            is AppState.Success -> {
-                showViewWorking()
-                val data = appState.data
-                if (data.isNullOrEmpty()) {
-                    showAlertDialog(
-                        getString(R.string.dialog_title_sorry),
-                        getString(R.string.empty_server_response_on_success)
-                    )
-                } else {
-                    adapter.setData(data)
-                }
-            }
-            is AppState.Loading -> {
-                showViewLoading()
-                if (appState.progress != null) {
-                    progress_bar_horizontal.visibility = VISIBLE
-                    progress_bar_round.visibility = GONE
-                    progress_bar_horizontal.progress = appState.progress
-                } else {
-                    progress_bar_horizontal.visibility = GONE
-                    progress_bar_round.visibility = VISIBLE
-                }
-            }
-            is AppState.Error -> {
-                showViewWorking()
-                showAlertDialog(getString(R.string.error_stub), appState.error.message)
-            }
-        }
+//    override fun renderData(appState: AppState) {
+//        when (appState) {
+//            is AppState.Success -> {
+//                showViewWorking()
+//                val data = appState.data
+//                if (data.isNullOrEmpty()) {
+//                    showAlertDialog(
+//                        getString(R.string.dialog_title_sorry),
+//                        getString(R.string.empty_server_response_on_success)
+//                    )
+//                } else {
+//                    adapter.setData(data)
+//                }
+//            }
+//            is AppState.Loading -> {
+//                showViewLoading()
+//                if (appState.progress != null) {
+//                    progress_bar_horizontal.visibility = VISIBLE
+//                    progress_bar_round.visibility = GONE
+//                    progress_bar_horizontal.progress = appState.progress
+//                } else {
+//                    progress_bar_horizontal.visibility = GONE
+//                    progress_bar_round.visibility = VISIBLE
+//                }
+//            }
+//            is AppState.Error -> {
+//                showViewWorking()
+//                showAlertDialog(getString(R.string.error_stub), appState.error.message)
+//            }
+//        }
+//    }
+
+    override fun setDataToAdapter(data: List<DataModel>) {
+        adapter.setData(data)
     }
 
     private fun iniViewModel() {
@@ -98,6 +114,16 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
         main_activity_recyclerview.adapter = adapter
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_history -> {
+                startActivity(Intent(this, HistoryActivity::class.java))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     private fun showViewWorking() {
         loading_frame_layout.visibility = GONE
     }
@@ -107,7 +133,6 @@ class MainActivity : BaseActivity<AppState, MainInteractor>() {
     }
 
     companion object {
-        private const val BOTTOM_SHEET_FRAGMENT_DIALOG_TAG =
-            "74a54328-5d62-46bf-ab6b-cbf5fgt0-092395"
+        private const val BOTTOM_SHEET_FRAGMENT_DIALOG_TAG = "74a54328-5d62-46bf-ab6b-cbf5fgt0-092395"
     }
 }
