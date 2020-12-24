@@ -3,7 +3,7 @@ package ru.geekbrains.historyscreen.view.history
 import android.os.Bundle
 import androidx.lifecycle.Observer
 import geekbrains.ru.core.BaseActivity
-import ru.geekbrains.historyscreen.R
+import ru.geekbrains.history.R
 import ru.geekbrains.model.data.DataModel
 import ru.geekbrains.model.data.SearchResult
 import kotlinx.android.synthetic.main.activity_history.*

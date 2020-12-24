@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import ru.geekbrains.historyscreen.R
+import ru.geekbrains.history.R
 import ru.geekbrains.model.data.SearchResult
 import kotlinx.android.synthetic.main.activity_history_recyclerview_item.view.*
 
